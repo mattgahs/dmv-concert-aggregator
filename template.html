@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Archivo+Narrow:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #E9EBEE;
+    --card:  #F4F5F7;
+    --ink:   #191C22;
+    --muted: #6E747F;
+    --rule:  #CDD1D7;
+    --flag:  #1B45D6;
+
+    --c-dc:      #C4362F;
+    --c-silver:  #A8561B;
+    --c-columbia:#2E7D5B;
+    --c-baltimore:#1F6FB2;
+    --c-vienna:  #7A4FA8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Archivo, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.4;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+
+  /* ---- masthead ---------------------------------------------------- */
+
+  .count {
+    font-family: 'Archivo Narrow', Archivo, sans-serif;
+    font-weight: 600;
+    font-size: clamp(38px, 11vw, 58px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .count-sub { margin: 6px 0 0; color: var(--muted); }
+  .count-sub b { color: var(--flag); font-weight: 700; }
+
+  /* ---- filters ----------------------------------------------------- */
+
+  .filters { margin: 22px 0 0; border-top: 1px solid var(--rule); padding-top: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+
+  .chip {
+    font: inherit;
+    font-size: 13px;
+    padding: 4px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .chip:hover { color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .chip[data-city][aria-pressed="true"] { background: var(--vc); border-color: var(--vc); }
+
+  /* ---- listing ----------------------------------------------------- */
+
+  .day { display: flex; gap: 12px; padding: 14px 0 2px; border-top: 1px solid var(--rule); }
+  .day:first-of-type { border-top: none; }
+
+  .date {
+    flex: 0 0 54px;
+    font-family: 'Archivo Narrow', Archivo, sans-serif;
+    font-weight: 600;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    padding-top: 2px;
+  }
+  .date .dow { display: block; color: var(--muted); font-size: 12px; }
+  .date .dom { display: block; font-size: 19px; }
+
+  .shows { flex: 1 1 auto; min-width: 0; }
+
+  .show {
+    display: flex;
+    gap: 10px;
+    padding: 0 0 12px;
+  }
+  .bar { flex: 0 0 3px; background: var(--vc); border-radius: 1px; }
+  .body { flex: 1 1 auto; min-width: 0; }
+
+  .act { font-weight: 700; }
+  .act a { color: inherit; text-decoration: none; }
+  .act a:hover { text-decoration: underline; }
+  .support { color: var(--muted); font-weight: 400; }
+  .meta { font-size: 13px; color: var(--muted); }
+  .meta .venue { color: var(--vc); font-weight: 500; }
+
+  .flag {
+    display: inline-block;
+    vertical-align: 2px;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--flag);
+    border: 1px solid var(--flag);
+    border-radius: 2px;
+    padding: 0 4px;
+  }
+
+  .bio { margin-top: 5px; }
+  .bio summary {
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    list-style: none;
+  }
+  .bio summary::-webkit-details-marker { display: none; }
+  .bio summary::before { content: "+ "; }
+  .bio[open] summary::before { content: "\2212 "; }
+  .bio summary:hover { color: var(--ink); }
+  .bio p { margin: 6px 0 0; max-width: 60ch; }
+  .bio a { display: inline-block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+
+  .empty { padding: 48px 0; color: var(--muted); }
+
+  .show.is-fav { background: rgba(27, 69, 214, 0.07); border-radius: 2px; }
+
+  .star {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    padding: 0 5px 0 0;
+    color: var(--rule);
+    vertical-align: -1px;
+  }
+  .star[aria-pressed="true"] { color: var(--flag); }
+  .star:hover { color: var(--ink); }
+
+  .follow {
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: none;
+    color: var(--muted);
+    padding: 1px 4px;
+    margin-left: 6px;
+    cursor: pointer;
+    vertical-align: 1px;
+  }
+  .follow[aria-pressed="true"] { background: var(--flag); border-color: var(--flag); color: var(--paper); }
+
+  .stamp { margin-top: 40px; font-size: 12px; color: var(--muted); }
+
+  .export { margin-top: 20px; }
+  .export summary {
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    list-style: none;
+  }
+  .export summary::-webkit-details-marker { display: none; }
+  .export summary:hover { color: var(--ink); }
+  .export-body { margin-top: 10px; padding: 12px; border: 1px solid var(--rule); background: var(--card); }
+  .export-body p { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+  .export-body textarea {
+    width: 100%;
+    min-height: 110px;
+    box-sizing: border-box;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    padding: 6px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+    resize: vertical;
+  }
+  .export-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .export-body hr { border: none; border-top: 1px solid var(--rule); margin: 14px 0; }
+
+  .follow-add { display: flex; gap: 6px; margin-bottom: 10px; }
+  .follow-add input {
+    flex: 1 1 auto;
+    font: inherit;
+    font-size: 13px;
+    padding: 5px 8px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .followed-list { margin-bottom: 4px; }
+  .followed-act {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    border-top: 1px solid var(--rule);
+  }
+  .followed-act:first-child { border-top: none; }
+  .followed-act .no-shows { color: var(--muted); font-size: 12px; }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--flag);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1 class="count" id="count">—</h1>
+  <p class="count-sub" id="sub"></p>
+
+  <div class="filters">
+    <div class="row" id="favToggle"></div>
+    <div class="row" id="cities"></div>
+    <div class="row" id="venues"></div>
+    <div class="row" id="ranges"></div>
+  </div>
+
+  <div id="list"></div>
+
+  <p class="stamp" id="stamp"></p>
+
+  <details class="export">
+    <summary>Manage favorites</summary>
+    <div class="export-body">
+      <p>
+        Follow an act that isn't playing anywhere yet &mdash; you'll be
+        flagged automatically the moment a matching show gets synced in.
+      </p>
+      <div class="follow-add">
+        <input type="text" id="followInput" placeholder="Act name">
+        <button class="chip" id="followAddBtn" type="button">Follow</button>
+      </div>
+      <div class="followed-list" id="followedActs"></div>
+
+      <hr>
+
+      <p>
+        Stars and follows you click here live in this browser's local storage.
+        To keep them permanently (and see them on other devices), download this
+        file, save it as <code>favorites.json</code> at the repo root, and commit it.
+        The next render will bake it back into the page.
+      </p>
+      <textarea id="exportText" readonly></textarea>
+      <div class="export-actions">
+        <button class="chip" id="downloadBtn" type="button">Download favorites.json</button>
+        <button class="chip" id="copyBtn" type="button">Copy</button>
+      </div>
+    </div>
+  </details>
+</div>
+
+<!-- render.py replaces the contents of this block with real data. The sample
+     rows below let the template be opened directly for layout work. -->
+<!-- render.py replaces the contents of this block with real data. The sample
+     rows below let the template be opened directly for layout work. -->
+<script id="data" type="application/json">
+{"built":"2026-09-13T11:00:00+00:00","favorite_acts":["Fontaines D.C."],"events":[
+{"source_id":"sample:1","venue":"930","headliner":"Wednesday","support":"Hotline TNT","local_date":"2026-09-19","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-11T08:00:00+00:00","fav_show":true,"fav_act":false},
+{"source_id":"sample:2","venue":"atlantis","headliner":"Lifeguard","support":null,"local_date":"2026-09-19","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-06-02T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:3","venue":"soundstage","headliner":"Spanish Love Songs","support":"Flycatcher","local_date":"2026-09-22","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-09T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:4","venue":"anthem","headliner":"Japanese Breakfast","support":"Ginger Root","local_date":"2026-09-24","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:5","venue":"merriweather","headliner":"Mitski","support":"Hayley Williams","local_date":"2026-09-25","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-04-18T08:00:00+00:00","fav_show":false,"fav_act":false,"bio":"Mitski Miyawaki is a Japanese-American singer-songwriter known for her introspective lyrics and genre-spanning sound across indie rock, punk, and orchestral pop.","wiki_url":"https://en.wikipedia.org/wiki/Mitski"},
+{"source_id":"sample:6","venue":"lincoln","headliner":"Cassandra Jenkins","support":null,"local_date":"2026-09-25","local_time":"20:00:00","ticket_url":"#","status":"offsale","first_seen":"2026-08-30T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:7","venue":"fillmore","headliner":"Turnstile","support":null,"local_date":"2026-09-27","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-05T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:8","venue":"wolftrap","headliner":"Jerry Douglas","support":null,"local_date":"2026-10-02","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-01T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:9","venue":"nevermore","headliner":"Turnover","support":"Nothing, Trauma Ray","local_date":"2026-10-08","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-10T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:10","venue":"930","headliner":"Horsegirl","support":"Debby Friday","local_date":"2026-10-11","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:11","venue":"cfg","headliner":"Fontaines D.C.","support":null,"local_date":"2026-11-07","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-05-14T08:00:00+00:00","fav_show":false,"fav_act":true},
+{"source_id":"sample:12","venue":"pier6","headliner":"Khruangbin","support":null,"local_date":"2027-06-18","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:13","venue":"atlantis","headliner":"Been Stellar","support":null,"local_date":null,"local_time":null,"ticket_url":"#","status":"onsale","first_seen":"2026-09-13T08:00:00+00:00","fav_show":false,"fav_act":false}
+]}
+</script>
+
+<script>
+const DATA   = JSON.parse(document.getElementById("data").textContent);
+const EVENTS = DATA.events;
+const BUILT  = DATA.built;
+
+// Colour encodes city, not venue: eleven distinguishable hues is not a thing,
+// and which town it is in is the first question anyway.
+const CITIES = {
+  "dc":        { label: "DC",           color: "var(--c-dc)" },
+  "silver":    { label: "Silver Spring", color: "var(--c-silver)" },
+  "columbia":  { label: "Columbia",     color: "var(--c-columbia)" },
+  "baltimore": { label: "Baltimore",    color: "var(--c-baltimore)" },
+  "vienna":    { label: "Vienna",       color: "var(--c-vienna)" },
+};
+
+const VENUES = {
+  "930":          { label: "9:30 Club",       city: "dc" },
+  "atlantis":     { label: "The Atlantis",    city: "dc" },
+  "lincoln":      { label: "Lincoln",         city: "dc" },
+  "anthem":       { label: "The Anthem",      city: "dc" },
+  "fillmore":     { label: "Fillmore",        city: "silver" },
+  "merriweather": { label: "Merriweather",    city: "columbia" },
+  "soundstage":   { label: "Soundstage",      city: "baltimore" },
+  "nevermore":    { label: "Nevermore Hall",  city: "baltimore" },
+  "pier6":        { label: "Pier Six",        city: "baltimore" },
+  "cfg":          { label: "CFG Bank Arena",  city: "baltimore" },
+  "wolftrap":     { label: "Wolf Trap",       city: "vienna" },
+};
+
+const RANGES = [
+  { key: "all",   label: "All upcoming" },
+  { key: "30",    label: "Next 30 days" },
+  { key: "90",    label: "Next 90 days" },
+  { key: "new14", label: "Added past 2 weeks" },
+  { key: "new30", label: "Added past month" },
+];
+
+// A show stays flagged as new for this long after it first appears.
+const NEW_DAYS = 14;
+
+let selected = new Set();   // empty = every venue
+let rangeFilter = "all";
+let favoritesOnly = false;
+
+// Favorites live two places: `fav_show`/`fav_act` baked into EVENTS at render
+// time from the committed favorites.json, and `overrides` here in
+// localStorage for anything toggled in this browser since the last render.
+// An override always wins over the baked-in value. Once a render catches up
+// (the override now matches the baked value) it's redundant and pruned below,
+// so overrides only ever hold the actual diff against favorites.json.
+const LS_KEY = "dmv_favorites_overrides_v1";
+
+function loadOverrides() {
+  try {
+    const o = JSON.parse(localStorage.getItem(LS_KEY));
+    if (o && typeof o === "object") return { shows: o.shows || {}, acts: o.acts || {} };
+  } catch {}
+  return { shows: {}, acts: {} };
+}
+
+function saveOverrides() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(overrides)); } catch {}
+}
+
+const overrides = loadOverrides();
+
+for (const [id, val] of Object.entries(overrides.shows)) {
+  const ev = EVENTS.find(e => e.source_id === id);
+  if (ev && !!ev.fav_show === val) delete overrides.shows[id];
+}
+const committedActsLower = new Set((DATA.favorite_acts || []).map(a => a.toLowerCase()));
+for (const [key, o] of Object.entries(overrides.acts)) {
+  if (committedActsLower.has(key) === o.favorited) delete overrides.acts[key];
+}
+saveOverrides();
+
+const isFavShow = ev => ev.source_id in overrides.shows ? overrides.shows[ev.source_id] : !!ev.fav_show;
+const isFavAct = ev => {
+  if (!ev.headliner) return false;
+  const key = ev.headliner.toLowerCase();
+  return key in overrides.acts ? overrides.acts[key].favorited : !!ev.fav_act;
+};
+
+function toggleFavShow(ev) {
+  overrides.shows[ev.source_id] = !isFavShow(ev);
+  saveOverrides();
+  render();
+}
+
+function toggleFavAct(ev) {
+  if (!ev.headliner) return;
+  const key = ev.headliner.toLowerCase();
+  overrides.acts[key] = { favorited: !isFavAct(ev), name: ev.headliner };
+  saveOverrides();
+  render();
+}
+
+function followActByName(name) {
+  name = name.trim();
+  if (!name) return;
+  overrides.acts[name.toLowerCase()] = { favorited: true, name };
+  saveOverrides();
+  render();
+}
+
+function unfollowAct(key, name) {
+  overrides.acts[key] = { favorited: false, name };
+  saveOverrides();
+  render();
+}
+
+// All currently-followed acts (committed ∪ overrides), regardless of
+// whether they have any show in EVENTS at all -- this is what lets you
+// follow an act with nothing scheduled yet.
+function allFollowedActs() {
+  const map = new Map((DATA.favorite_acts || []).map(a => [a.toLowerCase(), a]));
+  for (const [key, o] of Object.entries(overrides.acts)) {
+    if (o.favorited) map.set(key, o.name); else map.delete(key);
+  }
+  return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+}
+
+function actHasUpcomingShow(key) {
+  const today = new Date().toISOString().slice(0, 10);
+  return EVENTS.some(ev =>
+    ev.headliner && ev.headliner.toLowerCase() === key && (!ev.local_date || ev.local_date >= today)
+  );
+}
+
+function renderFollowedActs() {
+  const wrap = document.getElementById("followedActs");
+  wrap.textContent = "";
+  const acts = allFollowedActs();
+  if (!acts.length) {
+    const p = document.createElement("p");
+    p.textContent = "Not following any acts yet.";
+    wrap.append(p);
+    return;
+  }
+  for (const [key, name] of acts) {
+    const row = document.createElement("div");
+    row.className = "followed-act";
+
+    const label = document.createElement("span");
+    label.textContent = name;
+    if (!actHasUpcomingShow(key)) {
+      const note = document.createElement("span");
+      note.className = "no-shows";
+      note.textContent = " — no upcoming shows";
+      label.append(note);
+    }
+
+    const unfollow = document.createElement("button");
+    unfollow.type = "button";
+    unfollow.className = "chip";
+    unfollow.textContent = "unfollow";
+    unfollow.onclick = () => unfollowAct(key, name);
+
+    row.append(label, unfollow);
+    wrap.append(row);
+  }
+}
+
+function exportFavorites() {
+  const shows = new Set(EVENTS.filter(e => e.fav_show).map(e => e.source_id));
+  for (const [id, val] of Object.entries(overrides.shows)) {
+    if (val) shows.add(id); else shows.delete(id);
+  }
+  const acts = new Map((DATA.favorite_acts || []).map(a => [a.toLowerCase(), a]));
+  for (const [key, o] of Object.entries(overrides.acts)) {
+    if (o.favorited) acts.set(key, o.name); else acts.delete(key);
+  }
+  return JSON.stringify({
+    acts: [...acts.values()].sort((a, b) => a.localeCompare(b)),
+    shows: [...shows].sort(),
+  }, null, 2) + "\n";
+}
+
+const colorOf = key => CITIES[VENUES[key]?.city]?.color ?? "var(--muted)";
+
+const daysAgo = n => {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString();
+};
+
+const daysAhead = n => {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+
+const isNew = ev => ev.first_seen >= daysAgo(NEW_DAYS);
+
+const venuesIn = city =>
+  Object.keys(VENUES).filter(k => VENUES[k].city === city);
+
+const cityActive = city => {
+  const group = venuesIn(city);
+  return selected.size === group.length && group.every(k => selected.has(k));
+};
+
+function visible() {
+  const today = new Date().toISOString().slice(0, 10);
+  return EVENTS.filter(ev => {
+    if (ev.local_date && ev.local_date < today) return false;
+    if (selected.size && !selected.has(ev.venue)) return false;
+    if (favoritesOnly && !(isFavShow(ev) || isFavAct(ev))) return false;
+    if (rangeFilter === "30")    return ev.local_date <= daysAhead(30);
+    if (rangeFilter === "90")    return ev.local_date <= daysAhead(90);
+    if (rangeFilter === "new14") return ev.first_seen >= daysAgo(14);
+    if (rangeFilter === "new30") return ev.first_seen >= daysAgo(30);
+    return true;
+  });
+}
+
+function chip(label, click, color) {
+  const b = document.createElement("button");
+  b.className = "chip";
+  b.textContent = label;
+  if (color) b.style.setProperty("--vc", color);
+  b.onclick = click;
+  return b;
+}
+
+function buildChips() {
+  const fwrap = document.getElementById("favToggle");
+  const favBtn = chip("★ Favorites only", () => { favoritesOnly = !favoritesOnly; render(); });
+  favBtn.id = "favToggleBtn";
+  fwrap.append(favBtn);
+
+  const cwrap = document.getElementById("cities");
+  cwrap.append(chip("Everywhere", () => { selected.clear(); render(); }));
+  for (const [key, c] of Object.entries(CITIES)) {
+    const b = chip(c.label, () => {
+      selected = cityActive(key) ? new Set() : new Set(venuesIn(key));
+      render();
+    }, c.color);
+    b.dataset.city = key;
+    cwrap.append(b);
+  }
+
+  const vwrap = document.getElementById("venues");
+  for (const [key, v] of Object.entries(VENUES)) {
+    const b = chip(v.label, () => {
+      selected.has(key) ? selected.delete(key) : selected.add(key);
+      render();
+    }, colorOf(key));
+    b.dataset.city = VENUES[key].city;
+    b.dataset.venue = key;
+    vwrap.append(b);
+  }
+
+  const rwrap = document.getElementById("ranges");
+  for (const r of RANGES) {
+    rwrap.append(chip(r.label, () => { rangeFilter = r.key; render(); }));
+  }
+}
+
+function refreshChips() {
+  const fb = document.getElementById("favToggleBtn");
+  if (fb) fb.setAttribute("aria-pressed", String(favoritesOnly));
+  document.querySelectorAll("#cities .chip").forEach(b => {
+    const key = b.dataset.city;
+    b.setAttribute("aria-pressed", String(key ? cityActive(key) : selected.size === 0));
+  });
+  document.querySelectorAll("#venues .chip").forEach(b => {
+    b.setAttribute("aria-pressed", String(selected.has(b.dataset.venue)));
+  });
+  document.querySelectorAll("#ranges .chip").forEach((b, i) => {
+    b.setAttribute("aria-pressed", String(RANGES[i].key === rangeFilter));
+  });
+}
+
+function render() {
+  refreshChips();
+  renderFollowedActs();
+  const exportPanel = document.querySelector(".export");
+  if (exportPanel && exportPanel.open) {
+    document.getElementById("exportText").value = exportFavorites();
+  }
+  const rows = visible();
+  const newCount = rows.filter(isNew).length;
+
+  document.getElementById("count").textContent = rows.length;
+
+  const sub = document.getElementById("sub");
+  const noun = rows.length === 1 ? "show" : "shows";
+  sub.innerHTML = newCount
+    ? `${noun}, <b>${newCount} added in the past two weeks</b>`
+    : `${noun}. Nothing added in the past two weeks.`;
+
+  const list = document.getElementById("list");
+  list.textContent = "";
+
+  if (!rows.length) {
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "No shows match. Widen the date range or pick another venue.";
+    list.append(p);
+    return;
+  }
+
+  let currentDate = null, showsEl = null;
+
+  for (const ev of rows) {
+    if (ev.local_date !== currentDate) {
+      currentDate = ev.local_date;
+      const dayEl = document.createElement("div");
+      dayEl.className = "day";
+
+      const d = document.createElement("div");
+      d.className = "date";
+      if (currentDate) {
+        const dt = new Date(currentDate + "T12:00:00");
+        d.innerHTML = `<span class="dow">${dt.toLocaleDateString(undefined, { weekday: "short" })}</span>` +
+                      `<span class="dom">${dt.getDate()}</span>` +
+                      `<span class="dow">${dt.toLocaleDateString(undefined, { month: "short" })}</span>`;
+      } else {
+        d.innerHTML = `<span class="dow">date</span><span class="dow">TBA</span>`;
+      }
+
+      showsEl = document.createElement("div");
+      showsEl.className = "shows";
+      dayEl.append(d, showsEl);
+      list.append(dayEl);
+    }
+
+    const v = VENUES[ev.venue] ?? { label: ev.venue };
+
+    const favShow = isFavShow(ev);
+    const favAct = isFavAct(ev);
+
+    const show = document.createElement("div");
+    show.className = "show" + (favShow || favAct ? " is-fav" : "");
+    show.style.setProperty("--vc", colorOf(ev.venue));
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+
+    const body = document.createElement("div");
+    body.className = "body";
+
+    const act = document.createElement("div");
+    act.className = "act";
+
+    const star = document.createElement("button");
+    star.type = "button";
+    star.className = "star";
+    star.setAttribute("aria-pressed", String(favShow));
+    star.setAttribute("aria-label", (favShow ? "Unfavorite " : "Favorite ") + "this show");
+    star.textContent = favShow ? "★" : "☆";
+    star.onclick = () => toggleFavShow(ev);
+    act.append(star);
+
+    const a = document.createElement("a");
+    a.href = ev.ticket_url || "#";
+    a.textContent = ev.headliner || ev.title;
+    a.rel = "noopener";
+    act.append(a);
+
+    if (ev.headliner) {
+      const follow = document.createElement("button");
+      follow.type = "button";
+      follow.className = "follow";
+      follow.setAttribute("aria-pressed", String(favAct));
+      follow.textContent = favAct ? "following" : "follow";
+      follow.setAttribute("aria-label", (favAct ? "Unfollow " : "Follow ") + ev.headliner);
+      follow.onclick = () => toggleFavAct(ev);
+      act.append(follow);
+    }
+
+    if (ev.support) {
+      const s = document.createElement("span");
+      s.className = "support";
+      s.textContent = " with " + ev.support;
+      act.append(s);
+    }
+    if (isNew(ev)) {
+      const f = document.createElement("span");
+      f.className = "flag";
+      f.textContent = "new";
+      act.append(f);
+    }
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const vn = document.createElement("span");
+    vn.className = "venue";
+    vn.textContent = v.label;
+    meta.append(vn);
+    if (ev.local_time) {
+      const t = new Date("2000-01-01T" + ev.local_time);
+      meta.append("  " + t.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }));
+    }
+    if (ev.status && ev.status !== "onsale") {
+      meta.append("  " + ev.status);
+    }
+
+    body.append(act, meta);
+
+    if (ev.bio) {
+      const bio = document.createElement("details");
+      bio.className = "bio";
+      const summary = document.createElement("summary");
+      summary.textContent = "About " + ev.headliner;
+      const p = document.createElement("p");
+      p.textContent = ev.bio;
+      bio.append(summary, p);
+      if (ev.wiki_url) {
+        const link = document.createElement("a");
+        link.href = ev.wiki_url;
+        link.textContent = "via Wikipedia";
+        link.target = "_blank";
+        link.rel = "noopener";
+        bio.append(link);
+      }
+      body.append(bio);
+    }
+
+    show.append(bar, body);
+    showsEl.append(show);
+  }
+}
+
+document.getElementById("stamp").textContent = "Synced " + new Date(BUILT).toLocaleString();
+
+document.getElementById("followAddBtn").onclick = () => {
+  const input = document.getElementById("followInput");
+  followActByName(input.value);
+  input.value = "";
+};
+document.getElementById("followInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("followAddBtn").click();
+});
+
+document.querySelector(".export").addEventListener("toggle", (e) => {
+  if (e.target.open) document.getElementById("exportText").value = exportFavorites();
+});
+
+document.getElementById("downloadBtn").onclick = () => {
+  const blob = new Blob([exportFavorites()], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "favorites.json";
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById("copyBtn").onclick = async () => {
+  const btn = document.getElementById("copyBtn");
+  try {
+    await navigator.clipboard.writeText(exportFavorites());
+    const old = btn.textContent;
+    btn.textContent = "Copied";
+    setTimeout(() => { btn.textContent = old; }, 1200);
+  } catch {
+    btn.textContent = "Select & copy manually";
+  }
+};
+
+buildChips();
+render();
+</script>
+</body>
+</html>

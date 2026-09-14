@@ -1,0 +1,62 @@
+name: Sync and publish
+
+on:
+  schedule:
+    # 11:00 UTC ~= 6-7am US Eastern depending on DST.
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}
+
+# Two overlapping runs would each start from the same committed events.db and
+# the second commit would clobber the first -- so runs queue instead of
+# running concurrently.
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync events from Ticketmaster
+        env:
+          TM_API_KEY: ${{ secrets.TM_API_KEY }}
+        run: python imp_fetch.py sync
+
+      - name: Render dashboard
+        run: python render.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add events.db index.html
+          git diff --cached --quiet || git commit -m "Daily sync $(date -u +%Y-%m-%d)"
+          git push
+
+      # Pages serves just the rendered page, not the whole repo checkout.
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
