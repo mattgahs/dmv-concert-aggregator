@@ -486,7 +486,7 @@ const daysAhead = n => {
 
 const isNew = ev => ev.first_seen >= daysAgo(NEW_DAYS);
 
-const segOf = ev => ev.segment || "Other";
+const segOf = ev => (ev.segment && ev.segment !== "Undefined") ? ev.segment : "Other";
 
 const venuesIn = city =>
   Object.keys(VENUES).filter(k => VENUES[k].city === city);
