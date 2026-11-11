@@ -231,7 +231,7 @@
   <div class="filters">
     <div class="row" id="favToggle"></div>
     <div class="row" id="cities"></div>
-    <div class="row" id="venues"></div>
+    <div class="row" id="types"></div>
     <div class="row" id="ranges"></div>
   </div>
 
@@ -275,19 +275,19 @@
      rows below let the template be opened directly for layout work. -->
 <script id="data" type="application/json">
 {"built":"2026-09-13T11:00:00+00:00","favorite_acts":["Fontaines D.C."],"events":[
-{"source_id":"sample:1","venue":"930","headliner":"Wednesday","support":"Hotline TNT","local_date":"2026-09-19","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-11T08:00:00+00:00","fav_show":true,"fav_act":false},
-{"source_id":"sample:2","venue":"atlantis","headliner":"Lifeguard","support":null,"local_date":"2026-09-19","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-06-02T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:3","venue":"soundstage","headliner":"Spanish Love Songs","support":"Flycatcher","local_date":"2026-09-22","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-09T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:4","venue":"anthem","headliner":"Japanese Breakfast","support":"Ginger Root","local_date":"2026-09-24","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:5","venue":"merriweather","headliner":"Mitski","support":"Hayley Williams","local_date":"2026-09-25","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-04-18T08:00:00+00:00","fav_show":false,"fav_act":false,"bio":"Mitski Miyawaki is a Japanese-American singer-songwriter known for her introspective lyrics and genre-spanning sound across indie rock, punk, and orchestral pop.","wiki_url":"https://en.wikipedia.org/wiki/Mitski"},
-{"source_id":"sample:6","venue":"lincoln","headliner":"Cassandra Jenkins","support":null,"local_date":"2026-09-25","local_time":"20:00:00","ticket_url":"#","status":"offsale","first_seen":"2026-08-30T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:7","venue":"fillmore","headliner":"Turnstile","support":null,"local_date":"2026-09-27","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-05T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:8","venue":"wolftrap","headliner":"Jerry Douglas","support":null,"local_date":"2026-10-02","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-01T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:9","venue":"nevermore","headliner":"Turnover","support":"Nothing, Trauma Ray","local_date":"2026-10-08","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-10T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:10","venue":"930","headliner":"Horsegirl","support":"Debby Friday","local_date":"2026-10-11","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:11","venue":"cfg","headliner":"Fontaines D.C.","support":null,"local_date":"2026-11-07","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-05-14T08:00:00+00:00","fav_show":false,"fav_act":true},
-{"source_id":"sample:12","venue":"pier6","headliner":"Khruangbin","support":null,"local_date":"2027-06-18","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
-{"source_id":"sample:13","venue":"atlantis","headliner":"Been Stellar","support":null,"local_date":null,"local_time":null,"ticket_url":"#","status":"onsale","first_seen":"2026-09-13T08:00:00+00:00","fav_show":false,"fav_act":false}
+{"source_id":"sample:1","segment":"Music","venue":"930","headliner":"Wednesday","support":"Hotline TNT","local_date":"2026-09-19","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-11T08:00:00+00:00","fav_show":true,"fav_act":false},
+{"source_id":"sample:2","segment":"Music","venue":"atlantis","headliner":"Lifeguard","support":null,"local_date":"2026-09-19","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-06-02T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:3","segment":"Music","venue":"soundstage","headliner":"Spanish Love Songs","support":"Flycatcher","local_date":"2026-09-22","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-09T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:4","segment":"Music","venue":"anthem","headliner":"Japanese Breakfast","support":"Ginger Root","local_date":"2026-09-24","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:5","segment":"Music","venue":"merriweather","headliner":"Mitski","support":"Hayley Williams","local_date":"2026-09-25","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-04-18T08:00:00+00:00","fav_show":false,"fav_act":false,"bio":"Mitski Miyawaki is a Japanese-American singer-songwriter known for her introspective lyrics and genre-spanning sound across indie rock, punk, and orchestral pop.","wiki_url":"https://en.wikipedia.org/wiki/Mitski"},
+{"source_id":"sample:6","segment":"Arts & Theatre","venue":"lincoln","headliner":"Cassandra Jenkins","support":null,"local_date":"2026-09-25","local_time":"20:00:00","ticket_url":"#","status":"offsale","first_seen":"2026-08-30T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:7","segment":"Music","venue":"fillmore","headliner":"Turnstile","support":null,"local_date":"2026-09-27","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-05T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:8","segment":"Music","venue":"wolftrap","headliner":"Jerry Douglas","support":null,"local_date":"2026-10-02","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-01T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:9","segment":"Music","venue":"nevermore","headliner":"Turnover","support":"Nothing, Trauma Ray","local_date":"2026-10-08","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-10T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:10","segment":"Music","venue":"930","headliner":"Horsegirl","support":"Debby Friday","local_date":"2026-10-11","local_time":"19:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:11","segment":"Music","venue":"cfg","headliner":"Fontaines D.C.","support":null,"local_date":"2026-11-07","local_time":"20:00:00","ticket_url":"#","status":"onsale","first_seen":"2026-05-14T08:00:00+00:00","fav_show":false,"fav_act":true},
+{"source_id":"sample:12","segment":"Music","venue":"pier6","headliner":"Khruangbin","support":null,"local_date":"2027-06-18","local_time":"19:30:00","ticket_url":"#","status":"onsale","first_seen":"2026-09-12T08:00:00+00:00","fav_show":false,"fav_act":false},
+{"source_id":"sample:13","segment":"Music","venue":"atlantis","headliner":"Been Stellar","support":null,"local_date":null,"local_time":null,"ticket_url":"#","status":"onsale","first_seen":"2026-09-13T08:00:00+00:00","fav_show":false,"fav_act":false}
 ]}
 </script>
 
@@ -331,7 +331,8 @@ const RANGES = [
 // A show stays flagged as new for this long after it first appears.
 const NEW_DAYS = 14;
 
-let selected = new Set();   // empty = every venue
+let selected = new Set();   // empty = every venue (set by the city chips)
+let types = new Set();      // empty = every event type
 let rangeFilter = "all";
 let favoritesOnly = false;
 
@@ -485,6 +486,8 @@ const daysAhead = n => {
 
 const isNew = ev => ev.first_seen >= daysAgo(NEW_DAYS);
 
+const segOf = ev => ev.segment || "Other";
+
 const venuesIn = city =>
   Object.keys(VENUES).filter(k => VENUES[k].city === city);
 
@@ -498,6 +501,7 @@ function visible() {
   return EVENTS.filter(ev => {
     if (ev.local_date && ev.local_date < today) return false;
     if (selected.size && !selected.has(ev.venue)) return false;
+    if (types.size && !types.has(segOf(ev))) return false;
     if (favoritesOnly && !(isFavShow(ev) || isFavAct(ev))) return false;
     if (rangeFilter === "30")    return ev.local_date <= daysAhead(30);
     if (rangeFilter === "90")    return ev.local_date <= daysAhead(90);
@@ -533,15 +537,17 @@ function buildChips() {
     cwrap.append(b);
   }
 
-  const vwrap = document.getElementById("venues");
-  for (const [key, v] of Object.entries(VENUES)) {
-    const b = chip(v.label, () => {
-      selected.has(key) ? selected.delete(key) : selected.add(key);
+  const counts = {};
+  for (const ev of EVENTS) counts[segOf(ev)] = (counts[segOf(ev)] || 0) + 1;
+  const twrap = document.getElementById("types");
+  twrap.append(chip("All types", () => { types.clear(); render(); }));
+  for (const name of Object.keys(counts).sort((x, y) => counts[y] - counts[x])) {
+    const b = chip(name, () => {
+      types.has(name) ? types.delete(name) : types.add(name);
       render();
-    }, colorOf(key));
-    b.dataset.city = VENUES[key].city;
-    b.dataset.venue = key;
-    vwrap.append(b);
+    });
+    b.dataset.type = name;
+    twrap.append(b);
   }
 
   const rwrap = document.getElementById("ranges");
@@ -557,8 +563,9 @@ function refreshChips() {
     const key = b.dataset.city;
     b.setAttribute("aria-pressed", String(key ? cityActive(key) : selected.size === 0));
   });
-  document.querySelectorAll("#venues .chip").forEach(b => {
-    b.setAttribute("aria-pressed", String(selected.has(b.dataset.venue)));
+  document.querySelectorAll("#types .chip").forEach(b => {
+    const name = b.dataset.type;
+    b.setAttribute("aria-pressed", String(name ? types.has(name) : types.size === 0));
   });
   document.querySelectorAll("#ranges .chip").forEach((b, i) => {
     b.setAttribute("aria-pressed", String(RANGES[i].key === rangeFilter));

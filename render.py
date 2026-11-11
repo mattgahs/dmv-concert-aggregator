@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 FIELDS = [
     "e.source_id", "e.venue", "e.title", "e.headliner", "e.support",
     "e.start_utc", "e.local_date", "e.local_time", "e.ticket_url",
-    "e.on_sale_utc", "e.status", "e.first_seen",
+    "e.on_sale_utc", "e.status", "e.first_seen", "e.segment",
 ]
 
 

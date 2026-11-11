@@ -15,6 +15,7 @@ needs no key either.
 
 import json
 import os
+import re
 import sqlite3
 import sys
 import time
@@ -57,11 +58,10 @@ VENUES = [
     {"key": "wolftrap",     "name": "Wolf Trap Filene Center",    "state": "VA", "id": "KovZpZAEetJA"},
 ]
 
-# Discovery `classifications[].segment.name` values we treat as shows.
-# Everything else (conventions, WWE, auto shows at Merriweather/Anthem) is
-# rejected -- but logged, not dropped silently, so you can see what the filter
-# is actually catching before you trust it.
-KEEP_SEGMENTS = {"Music"}
+# Hospitality add-ons that Ticketmaster lists as separate pseudo-events next to
+# the real show (CFG Bank Arena's club-level packages, VIP "upsell only"
+# items). Dropped -- but logged -- so they don't duplicate every arena show.
+PACKAGE_RE = re.compile(r"^(fearless club|the nineteen 62|nineteen 62 club)\b|upsell only", re.I)
 
 
 def get(path, **params):
@@ -98,15 +98,23 @@ def fetch_events(venue_id):
         time.sleep(0.25)
 
 
+def segment_of(ev):
+    """Discovery segment name (Music, Sports, Arts & Theatre, ...). Music wins if any
+    classification says Music, matching what the old Music-only filter kept."""
+    segs = [(c.get("segment") or {}).get("name") for c in ev.get("classifications") or []]
+    segs = [x for x in segs if x]
+    if "Music" in segs:
+        return "Music"
+    primary = next((c for c in ev.get("classifications") or [] if c.get("primary")), None)
+    if primary and (primary.get("segment") or {}).get("name"):
+        return primary["segment"]["name"]
+    return segs[0] if segs else None
+
+
 def normalize(ev, venue_key):
     """Map a Discovery event onto our row shape. Returns None if filtered out."""
-    segs = {
-        c.get("segment", {}).get("name")
-        for c in ev.get("classifications", [])
-        if c.get("segment")
-    }
-    if segs and not (segs & KEEP_SEGMENTS):
-        print(f"  [reject] {ev.get('name')} -- segments={segs or '{}'}")
+    if PACKAGE_RE.search(ev.get("name") or ""):
+        print(f"  [reject] {ev.get('name')} -- hospitality package")
         return None
 
     attractions = ev.get("_embedded", {}).get("attractions", [])
@@ -120,6 +128,7 @@ def normalize(ev, venue_key):
         # Ticketmaster's own attraction id -- used to fetch a bio once per act
         # and join it back at render time. Not a display field.
         "headliner_id": attractions[0]["id"] if attractions else None,
+        "segment": segment_of(ev),
         "support": ", ".join(a["name"] for a in attractions[1:]) or None,
         # Discovery does not expose doors reliably; left null for now.
         "doors_utc": None,
@@ -167,13 +176,22 @@ CREATE TABLE IF NOT EXISTS attractions (
 
 
 def ensure_schema(db):
+    """Returns True if this call just added the `segment` column to a populated DB."""
     db.executescript(SCHEMA)
     # events predates headliner_id; CREATE TABLE IF NOT EXISTS won't add it
     # to a DB that already exists, so migrate it in by hand.
     cols = {row[1] for row in db.execute("PRAGMA table_info(events)")}
     if "headliner_id" not in cols:
         db.execute("ALTER TABLE events ADD COLUMN headliner_id TEXT")
+    migrated = False
+    if "segment" not in cols:
+        had_rows = db.execute("SELECT COUNT(*) FROM events").fetchone()[0] > 0
+        db.execute("ALTER TABLE events ADD COLUMN segment TEXT")
+        # Everything stored before this column existed passed the old Music-only filter.
+        db.execute("UPDATE events SET segment = 'Music'")
+        migrated = had_rows
     db.commit()
+    return migrated
 
 
 def wiki_summary(wiki_url, retries=1):
@@ -237,7 +255,7 @@ def cmd_sync():
 
     now = datetime.now(timezone.utc).isoformat()
     db = sqlite3.connect(DB_PATH)
-    ensure_schema(db)
+    migrated = ensure_schema(db)
 
     total = 0
     for v in VENUES:
@@ -260,6 +278,13 @@ def cmd_sync():
         db.commit()
 
     print(f"\nUpserted {total} events into {DB_PATH}")
+
+    if migrated:
+        # Non-music events appear for the first time on this sync; don't flag
+        # the whole backlog as "new".
+        db.execute("UPDATE events SET first_seen = ? WHERE first_seen = ?",
+                   ("2020-01-01T00:00:00+00:00", now))
+        db.commit()
 
     known = {r[0] for r in db.execute("SELECT attraction_id FROM attractions")}
     new_ids = {

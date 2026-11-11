@@ -55,6 +55,18 @@ exported, and the matching `localStorage` overrides — now redundant — quietl
 prune themselves on next page load. Until you export and commit, favorites
 exist only in the browser you clicked them in.
 
+## Event types
+
+`sync` keeps every Ticketmaster event and stores its Discovery segment (Music,
+Arts & Theatre, Sports, Film, Miscellaneous) in `events.segment`; the page has
+type chips for filtering (all shown by default). It used to keep Music only.
+The one remaining exclusion is hospitality add-ons that Ticketmaster lists as
+pseudo-events next to the real show — CFG Bank Arena's "Fearless Club" and
+"NINETEEN 62" packages and "(UPSELL ONLY)" VIP items (`PACKAGE_RE`) — logged as
+`[reject]` so the rule can be sanity-checked. The first sync after the segment
+column is added backfills existing rows as Music and backdates `first_seen` so
+the newly visible non-music backlog isn't all flagged "new".
+
 ## Artist bios
 
 Each show can carry a short "About {act}" disclosure, sourced from Wikipedia
