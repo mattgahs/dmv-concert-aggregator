@@ -67,6 +67,11 @@ pseudo-events next to the real show — CFG Bank Arena's "Fearless Club" and
 column is added backfills existing rows as Music and backdates `first_seen` so
 the newly visible non-music backlog isn't all flagged "new".
 
+"Added since last sync" works because every sync stamps its inserts with one
+shared timestamp: `render.py` passes the newest `last_seen` as `last_sync`, and
+the page matches events whose `first_seen` equals it. It is per run, so a manual
+re-run (or a day with nothing new) resets it to whatever that run added.
+
 ## Artist bios
 
 Each show can carry a short "About {act}" disclosure, sourced from Wikipedia

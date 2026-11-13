@@ -46,8 +46,12 @@ def load(db_path):
         "ORDER BY e.local_date IS NULL, e.local_date, e.local_time",
         (today,),
     ).fetchall()
+    # Every sync stamps first_seen/last_seen with one shared timestamp, so the
+    # newest last_seen identifies the latest run and first_seen == that value
+    # means "first appeared in that run".
+    last_sync = db.execute("SELECT MAX(last_seen) FROM events").fetchone()[0]
     db.close()
-    return [dict(r) for r in rows]
+    return [dict(r) for r in rows], last_sync
 
 
 def main():
@@ -58,7 +62,7 @@ def main():
     p.add_argument("--favorites", default="favorites.json")
     args = p.parse_args()
 
-    events = load(args.db)
+    events, last_sync = load(args.db)
 
     favorites = load_favorites(args.favorites)
     fav_shows = set(favorites["shows"])
@@ -72,6 +76,7 @@ def main():
 
     payload = {
         "built": datetime.now(timezone.utc).isoformat(),
+        "last_sync": last_sync,
         "favorite_acts": favorites["acts"],
         "events": events,
     }

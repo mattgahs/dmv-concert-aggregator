@@ -324,6 +324,7 @@ const RANGES = [
   { key: "all",   label: "All upcoming" },
   { key: "30",    label: "Next 30 days" },
   { key: "90",    label: "Next 90 days" },
+  { key: "sync",  label: "Added since last sync" },
   { key: "new14", label: "Added past 2 weeks" },
   { key: "new30", label: "Added past month" },
 ];
@@ -505,6 +506,7 @@ function visible() {
     if (favoritesOnly && !(isFavShow(ev) || isFavAct(ev))) return false;
     if (rangeFilter === "30")    return ev.local_date <= daysAhead(30);
     if (rangeFilter === "90")    return ev.local_date <= daysAhead(90);
+    if (rangeFilter === "sync")  return !!DATA.last_sync && ev.first_seen === DATA.last_sync;
     if (rangeFilter === "new14") return ev.first_seen >= daysAgo(14);
     if (rangeFilter === "new30") return ev.first_seen >= daysAgo(30);
     return true;
